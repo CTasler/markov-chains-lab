@@ -15,7 +15,7 @@ def open_and_read_file(file_path):
     return content
 
 
-def make_chains(content):
+def make_chains(content, n_gram):
     """Take input text as string; return dictionary of Markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -43,9 +43,13 @@ def make_chains(content):
     
     words = content.split()
     value = []
-    for i in range(len(words) - 2):
-        key = (words[i], words[i + 1])
-        value = words[i + 2]
+    for i in range(len(words) - n_gram):
+        key = []
+        value = words[i + n_gram]
+        for num in range(n_gram):
+            key.append(words[i])
+            i += 1
+        key = tuple(key)
         if key not in chains:
             chains[key] = []
         chains[key].append(value)
@@ -66,19 +70,31 @@ def make_text(chains):
     final_sentence = " ".join(list(random_key))
     new_value = choice(chains[random_key])
     final_sentence += f" {new_value} "
-    new_key = (random_key[1], new_value)
+    new_key = []
+    i = 1
+    for num in range(n_gram - 1):
+        new_key.append(random_key[i])
+        i += 1
+    new_key.append(new_value)
+    new_key = tuple(new_key)
 
     while new_key in chains: 
         new_value = choice(chains[new_key])
         final_sentence += f"{new_value} "
-        new_key = (new_key[1], new_value)
+        new_new_key = []
+        i = 1
+        for num in range(n_gram - 1):
+            new_new_key.append(new_key[i])
+            i += 1
+        new_new_key.append(new_value)
+        new_key = tuple(new_new_key)
    
-    print(final_sentence.capitalize())
-    return final_sentence.capitalize()
+    return final_sentence
 
 
+n_gram = int(input("How long would you like your n_gram to be? "))
 input_path = sys.argv[1]
 input_text = open_and_read_file(input_path)
-chains = make_chains(input_text)
+chains = make_chains(input_text, n_gram)
 random_text = make_text(chains)
 print(random_text)
