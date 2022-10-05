@@ -60,13 +60,14 @@ def make_chains(content, n_gram):
 def make_text(chains):
     """Return text from chains."""
 
-    words = []
-    all_keys = []
+    keys_starting_with_capital = []
   
     for key in chains.keys():
-        all_keys.append(key)
+        first_word = key[0]
+        if first_word[0].isupper():
+            keys_starting_with_capital.append(key)
        
-    random_key = choice(all_keys)
+    random_key = choice(keys_starting_with_capital)
     final_sentence = " ".join(list(random_key))
     new_value = choice(chains[random_key])
     final_sentence += f" {new_value} "
